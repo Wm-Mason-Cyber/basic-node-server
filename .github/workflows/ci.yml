@@ -7,12 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  nodejs-build-and-test:
+    name: Node.js Build and Test
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x] # Use node:18-slim as specified in requirements
+        node-version: [18.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -21,5 +22,24 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm test
+    - name: Install dependencies
+      run: npm ci
+    - name: Run Node.js tests
+      run: npm test
+
+  docker-build-and-test:
+    name: Docker Build and Test
+    runs-on: ubuntu-latest
+    needs: nodejs-build-and-test # This job depends on nodejs-build-and-test passing
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Docker image
+      run: docker build -t node-basics-demo .
+    - name: Run tests inside Docker container
+      # This command runs tests directly inside a temporary container
+      # It leverages the scripts/test_local.sh logic for a more robust approach
+      # For a simpler approach, you could just mount the volume and run npm test
+      # However, since test_local.sh already handles cleanup and execution inside Docker
+      # it's better to use it.
+      run: ./scripts/test_local.sh
