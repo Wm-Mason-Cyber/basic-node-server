@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .message-form { margin-top: 20px; }
+        .messages-list { margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+        .message { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+        .message small { color: #666; }
+    </style>
+</head>
+<body>
+    <h1><%= title %></h1>
+    <p>Messages posted here are stored and displayed safely using EJS escaping.</p>
+
+    <div class="message-form">
+        <h2>Post a Message</h2>
+        <form action="/stored_safe" method="POST">
+            <textarea name="message" rows="4" cols="50" placeholder="Enter your message here..."></textarea><br>
+            <button type="submit">Post Message</button>
+        </form>
+    </div>
+
+    <div class="messages-list">
+        <h2>Stored Messages</h2>
+        <% if (messages && messages.length > 0) { %>
+            <% messages.forEach(message => { %>
+                <div class="message">
+                    <%= message.text %>
+                    <br><small>Posted: <%= message.timestamp %></small>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No messages yet. Post one!</p>
+        <% } %>
+    </div>
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>
