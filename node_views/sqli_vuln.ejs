@@ -27,20 +27,26 @@
         </form>
     </div>
 
-    <div class="result">
-        <h2>Search Result</h2>
-        <% if (error) { %>
-            <p style="color: red;">Error: <%= error %></p>
-        <% } else if (user) { %>
-            <p>User Found: <strong><%= user.name %></strong> (ID: <%= user.id %>)</p>
-        <% } else if (name) { %>
-            <p>No user found with name: <strong><%= name %></strong></p>
-        <% } else { %>
-            <p>Enter a user name to search.</p>
-        <% } %>
-    </div>
-
-    <p>Try injecting with <code>%' OR '1'='1</code> or <code>admin' -- </code></p>
+            <div class="result">
+                <h2>Search Result</h2>
+                <% if (error) { %>
+                    <p style="color: red;">Error: <%= error %></p>
+                <% } else if (user && user.length > 0) { %>
+                    <p>Users Found:</p>
+                    <ul>
+                        <% user.forEach(u => { %>
+                            <li><strong><%= u.name %></strong> (ID: <%= u.id %>)</li>
+                        <% }); %>
+                    </ul>
+                <% } else if (user && user.id) { %>
+                     <p>User Found: <strong><%= user.name %></strong> (ID: <%= user.id %>)</p>
+                <% } else if (name) { %>
+                    <p>No user found with name: <strong><%= name %></strong></p>
+                <% } else { %>
+                    <p>Enter a user name to search.</p>
+                <% } %>
+            </div>
+        <p>Try injecting with <code>%' OR '1'='1</code> or <code>admin' -- </code></p>
 
     <p><a href="/">Back to Home</a></p>
 </body>

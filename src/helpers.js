@@ -34,18 +34,32 @@ function writeMessages(messages) {
 }
 
 // --- SQLite Database Storage ---
-const DB_FILE = path.join(__dirname, '..', 'data', 'node_demo.db');
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const DB_FILE = path.join(DATA_DIR, 'node_demo.db');
 let db;
 
 /**
  * Initializes the SQLite database.
  * Creates the 'users' table if it doesn't exist and seeds it with data.
+ * @returns {Promise<sqlite3.Database>} A promise that resolves with the database instance.
  */
 function initDb() {
-    db = new sqlite3.Database(DB_FILE, (err) => {
-        if (err) {
-            console.error('Error opening database:', err.message);
-        } else {
+    return new Promise((resolve, reject) => {
+        // Ensure data directory exists
+        if (!fs.existsSync(DATA_DIR)) {
+            fs.mkdirSync(DATA_DIR);
+        }
+
+        if (db && db.open) { // If DB is already open, resolve with existing instance
+            console.log('Database already open.');
+            return resolve(db);
+        }
+
+        db = new sqlite3.Database(DB_FILE, (err) => {
+            if (err) {
+                console.error('Error opening database:', err.message);
+                return reject(err);
+            }
             console.log('Connected to the SQLite database.');
             db.run(`CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,20 +68,45 @@ function initDb() {
             )`, (err) => {
                 if (err) {
                     console.error('Error creating table:', err.message);
-                } else {
-                    // Check if table is empty before seeding
-                    db.get("SELECT COUNT(*) AS count FROM users", (err, row) => {
-                        if (err) {
-                            console.error('Error checking user count:', err.message);
-                        } else if (row.count === 0) {
-                            console.log('Seeding users table...');
-                            db.run("INSERT INTO users (name, password) VALUES (?, ?)", ["admin", "adminpass"]);
-                            db.run("INSERT INTO users (name, password) VALUES (?, ?)", ["user1", "pass123"]);
-                            db.run("INSERT INTO users (name, password) VALUES (?, ?)", ["user2", "securepass"]);
-                        }
-                    });
+                    return reject(err);
                 }
+                // Check if table is empty before seeding
+                db.get("SELECT COUNT(*) AS count FROM users", (err, row) => {
+                    if (err) {
+                        console.error('Error checking user count:', err.message);
+                        return reject(err);
+                    } else if (row.count === 0) {
+                        console.log('Seeding users table...');
+                        db.run("INSERT INTO users (name, password) VALUES (?, ?)", ["admin", "adminpass"]);
+                        db.run("INSERT INTO users (name, password) VALUES (?, ?)", ["user1", "pass123"]);
+                        db.run("INSERT INTO users (name, password) VALUES (?, ?)", ["user2", "securepass"]);
+                    }
+                    resolve(db);
+                });
             });
+        });
+    });
+}
+
+/**
+ * Closes the SQLite database connection.
+ * @returns {Promise<void>} A promise that resolves when the database is closed.
+ */
+function closeDb() {
+    return new Promise((resolve, reject) => {
+        if (db && db.open) {
+            db.close((err) => {
+                if (err) {
+                    console.error('Error closing database:', err.message);
+                    return reject(err);
+                }
+                console.log('Database connection closed.');
+                db = null; // Clear the db instance
+                resolve();
+            });
+        } else {
+            console.log('No active database connection to close.');
+            resolve();
         }
     });
 }
@@ -83,7 +122,7 @@ function getUserVulnerable(name, callback) {
     // User input is directly concatenated into the SQL string.
     const sql = `SELECT id, name FROM users WHERE name = '${name}'`;
     console.log('Vulnerable SQL:', sql);
-    db.get(sql, [], callback);
+    db.all(sql, [], callback); // Changed from db.get() to db.all()
 }
 
 /**
@@ -104,6 +143,8 @@ module.exports = {
     readMessages,
     writeMessages,
     initDb,
+    closeDb, // Export closeDb
     getUserVulnerable,
-    getUserSafe
+    getUserSafe,
+    getDb: () => db // Export db instance for direct management in tests if needed
 };

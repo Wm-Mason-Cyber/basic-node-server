@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
-const { initDb } = require('./helpers'); // Import initDb
+const { initDb, closeDb } = require('./helpers'); // Import initDb and closeDb
 
 // Initialize Express app
 const app = express();
@@ -71,16 +71,47 @@ app.use(bodyParser.json());
 const mainRoutes = require('./routes');
 app.use('/', mainRoutes);
 
-// Initialize database
-initDb();
+// Utility endpoint for testing: reset data
+app.get('/reset-data', (req, res) => {
+    logger.info('Received request to reset data.');
+    try {
+        require('child_process').execSync('npm run reset-data');
+        logger.info('Data reset successfully via /reset-data endpoint.');
+        res.status(200).send('Data reset successfully.');
+    } catch (error) {
+        logger.error(`Error resetting data via /reset-data endpoint: ${error.message}`);
+        res.status(500).send(`Error resetting data: ${error.message}`);
+    }
+});
 
 // Export the app for testing
 module.exports = app;
 
 // Start the server only if this file is run directly (not imported)
 if (require.main === module) {
-    app.listen(PORT, () => {
+    // Initialize database when the app starts
+    initDb().catch(err => {
+        logger.error('Failed to initialize database:', err);
+        process.exit(1); // Exit if DB can't be initialized
+    });
+
+    const server = app.listen(PORT, () => {
         logger.info(`Server running on http://localhost:${PORT}`);
         logger.warn('WARNING: This server contains intentionally vulnerable code for classroom use only. DO NOT deploy publicly.');
+    });
+
+    // Handle graceful shutdown
+    process.on('SIGINT', () => {
+        logger.info('SIGINT signal received: closing HTTP server.');
+        server.close(() => {
+            logger.info('HTTP server closed.');
+            closeDb().then(() => {
+                logger.info('Database connection closed. Exiting.');
+                process.exit(0);
+            }).catch(err => {
+                logger.error('Error closing database:', err);
+                process.exit(1);
+            });
+        });
     });
 }
