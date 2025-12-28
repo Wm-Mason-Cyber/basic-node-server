@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const { readMessages, writeMessages } = require('./helpers'); // Import helper functions
+const { readMessages, writeMessages, getUserVulnerable, getUserSafe } = require('./helpers'); // Import helper functions
 
 // Assuming the logger is exported from app.js as 'logger'
 // For simplicity in this example, we'll re-require winston and create a logger instance here,
@@ -93,5 +93,48 @@ router.post('/stored_safe', (req, res) => {
     }
     res.redirect('/stored_safe');
 });
+
+// --- SQL Injection Demos ---
+
+/**
+ * GET /sql_vuln
+ * Intentionally vulnerable SQL Injection endpoint.
+ * Searches for a user by name using string concatenation.
+ */
+router.get('/sql_vuln', (req, res) => {
+    const name = req.query.name || '';
+    getUserVulnerable(name, (err, user) => {
+        if (err) {
+            console.error('SQL Vulnerable Error:', err.message);
+            return res.render('sqli_vuln', { title: 'SQL Injection (Vulnerable)', name, user: null, error: 'Database error' });
+        }
+        res.render('sqli_vuln', { title: 'SQL Injection (Vulnerable)', name, user, error: null });
+    });
+});
+
+/**
+ * GET /sql_safe
+ * Safe SQL Injection endpoint.
+ * Searches for a user by name using parameterized queries.
+ */
+router.get('/sql_safe', (req, res) => {
+    const name = req.query.name || '';
+    getUserSafe(name, (err, user) => {
+        if (err) {
+            console.error('SQL Safe Error:', err.message);
+            return res.render('sqli_safe', { title: 'SQL Injection (Safe)', name, user: null, error: 'Database error' });
+        }
+        res.render('sqli_safe', { title: 'SQL Injection (Safe)', name, user, error: null });
+    });
+});
+
+// --- API Endpoint ---
+router.get('/api/search', (req, res) => {
+    const query = req.query.q || '';
+    // In a real application, 'escaped' would be a truly sanitized version.
+    // For this demo, we'll just show the raw query and a placeholder for 'safe'.
+    res.json({ ok: true, query: query, safe: encodeURIComponent(query) });
+});
+
 
 module.exports = router;

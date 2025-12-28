@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .query-input { margin-top: 20px; }
+        .result { margin-top: 15px; border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1><%= title %></h1>
+    <p>Search for a user by name. The input is used in a parameterized SQL query to prevent injection.</p>
+
+    <div class="query-input">
+        <form action="/sql_safe" method="GET">
+            <label for="name">User Name:</label>
+            <input type="text" id="name" name="name" value="<%= name %>" placeholder="e.g., admin or user1">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="result">
+        <h2>Search Result</h2>
+        <% if (error) { %>
+            <p style="color: red;">Error: <%= error %></p>
+        <% } else if (user) { %>
+            <p>User Found: <strong><%= user.name %></strong> (ID: <%= user.id %>)</p>
+        <% } else if (name) { %>
+            <p>No user found with name: <strong><%= name %></strong></p>
+        <% } else { %>
+            <p>Enter a user name to search.</p>
+        <% } %>
+    </div>
+
+    <p>SQL Injection attempts like <code>%' OR '1'='1</code> will not work here.</p>
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>

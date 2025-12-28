@@ -3,6 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
+const { initDb } = require('./helpers'); // Import initDb
 
 // Initialize Express app
 const app = express();
@@ -69,6 +70,9 @@ app.use(bodyParser.json());
 // Routes
 const mainRoutes = require('./routes');
 app.use('/', mainRoutes);
+
+// Initialize database
+initDb();
 
 // Export the app for testing
 module.exports = app;
