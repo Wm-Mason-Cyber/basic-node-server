@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        nav a { margin-right: 15px; }
+        .warning { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1><%= title %></h1>
+    <p><%= message %></p>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/vuln_reflected?q=test">Reflected XSS (Vulnerable)</a>
+        <a href="/safe_reflected?q=test">Reflected XSS (Safe)</a>
+        <a href="/stored_vuln">Stored XSS (Vulnerable)</a>
+        <a href="/stored_safe">Stored XSS (Safe)</a>
+        <a href="/sql_vuln?name=admin">SQLi (Vulnerable)</a>
+        <a href="/sql_safe?name=admin">SQLi (Safe)</a>
+        <a href="/api/search?q=test">API Search</a>
+    </nav>
+
+    <p class="warning">
+        WARNING: This server contains intentionally vulnerable code for classroom use only. DO NOT deploy publicly.
+    </p>
+</body>
+</html>
