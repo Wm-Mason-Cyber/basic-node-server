@@ -11,6 +11,5 @@ npm-debug.log*
 # Project-specific exclusions for Docker image size and clarity
 data/
 coverage/
-tests/
 docs/
 scripts/
