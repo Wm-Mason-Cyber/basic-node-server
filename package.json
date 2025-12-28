@@ -1,0 +1,33 @@
+{
+  "name": "basic-node-server",
+  "version": "1.0.0",
+  "description": "A basic Node.js Express server for cybersecurity education, demonstrating XSS and SQLi vulnerabilities and safe implementations.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "jest --detectOpenHandles",
+    "reset-data": "scripts/reset_data.sh"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "cybersecurity",
+    "xss",
+    "sqli",
+    "education"
+  ],
+  "author": "Your Name/Organization",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  }
+}
