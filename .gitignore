@@ -109,6 +109,14 @@ dist
 # TernJS port file
 .tern-port
 
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temp directories
+/tmp/
+/temp/
+
 # Database files
 *.db
 data/node_demo.db

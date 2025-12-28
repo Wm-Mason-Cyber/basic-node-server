@@ -7,3 +7,10 @@ docker-compose.yml
 npm-debug.log*
 .DS_Store
 *.env
+
+# Project-specific exclusions for Docker image size and clarity
+data/
+coverage/
+tests/
+docs/
+scripts/
