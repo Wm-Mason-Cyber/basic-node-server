@@ -26,18 +26,36 @@ npm test
 ```
 
 ### Docker Build and Run
-Build the Docker image and run the container:
-```bash
-docker build -t node-basics-demo .
-docker run --rm -p 3000:3000 node-basics-demo
-```
-Docker logs will also include the verbose application logs.
+You can run the application using Docker, which provides a consistent environment.
+
+**Using Docker CLI:**
+1.  Build the Docker image:
+    ```bash
+    docker build -t node-basics-demo .
+    ```
+2.  Run the container:
+    ```bash
+    docker run --rm -p 3000:3000 node-basics-demo
+    ```
+    The app will be available at `http://localhost:3000`. Docker logs will include the verbose application logs.
+
+**Using Docker Compose (Recommended for development):**
+1.  Simply run:
+    ```bash
+    docker-compose up --build
+    ```
+    This will build the image (if not already built) and start the container, mapping port 3000. Data (messages.json, node_demo.db) will be persisted in your local `./data` directory thanks to volume mapping.
+    To stop and remove containers:
+    ```bash
+    docker-compose down
+    ```
 
 ### Reset Data
-To clear any persisted data (e.g., messages for stored XSS, SQLite database):
+To clear any persisted data (e.g., messages for stored XSS, SQLite database), use the script:
 ```bash
-npm run reset-data
+./scripts/reset_data.sh
 ```
+This script should be run directly, not via `npm run reset-data` if you're managing the Docker volume. If running locally (not in Docker), `npm run reset-data` is equivalent.
 
 ## Project Structure
 

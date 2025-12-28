@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount data folder to persist messages and database outside the container
+      - ./data:/app/data
+    environment:
+      # Optional: Define environment variables here if needed
+      NODE_ENV: development
+    # Entrypoint to ensure log directory exists before starting the app
+    entrypoint: ["/bin/sh", "-c", "mkdir -p /app/logs && npm start"]
