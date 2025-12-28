@@ -5,7 +5,7 @@ FROM node:18-slim
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if available) to the working directory
-# to leverage Docker cache
+# to leverage Docker cache for dependencies
 COPY package*.json ./
 
 # Install app dependencies
@@ -14,6 +14,10 @@ RUN npm ci
 
 # Copy the rest of the application code
 COPY . .
+
+# Ensure the logs directory exists at runtime for winston-daily-rotate-file
+# This is often handled by the application logic, but can be explicit for clarity
+RUN mkdir -p logs
 
 # Expose the port the app runs on
 EXPOSE 3000

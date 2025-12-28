@@ -11,5 +11,5 @@ services:
     environment:
       # Optional: Define environment variables here if needed
       NODE_ENV: development
-    # Entrypoint to ensure log directory exists before starting the app
-    entrypoint: ["/bin/sh", "-c", "mkdir -p /app/logs && npm start"]
+    # Entrypoint is not needed as logs directory creation is handled in Dockerfile
+    # and CMD in Dockerfile handles app start.
