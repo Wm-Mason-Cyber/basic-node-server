@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .output { border: 1px solid #ccc; padding: 10px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h1><%= title %></h1>
+    <p>This page safely renders the 'q' query parameter using EJS escaping.</p>
+
+    <div class="output">
+        You searched for:
+        <%= input %>
+    </div>
+
+    <p>Even if you append <code>?q=&lt;script&gt;alert('XSS')&lt;/script&gt;</code> to the URL, the script will not execute.</p>
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>

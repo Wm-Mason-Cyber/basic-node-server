@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .warning { color: red; font-weight: bold; }
+        .output { border: 1px solid #ccc; padding: 10px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h1><%= title %></h1>
+    <p class="warning">
+        WARNING: This page is intentionally vulnerable to Reflected XSS. Do not deploy publicly.
+    </p>
+
+    <p>The query parameter 'q' is rendered directly without sanitization.</p>
+
+    <div class="output">
+        You searched for:
+        <!-- WARNING: Intentionally vulnerable code. Input is rendered directly. -->
+        <%- input %>
+    </div>
+
+    <p>Try appending <code>?q=&lt;script&gt;alert('XSS')&lt;/script&gt;</code> to the URL.</p>
+
+    <p><a href="/">Back to Home</a></p>
+</body>
+</html>
